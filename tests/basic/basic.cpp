@@ -1,6 +1,7 @@
 #include <catch2/catch_all.hpp>
 #include <ez/SmallVec.hpp>
 
+#include <memory>
 #include <vector>
 
 TEST_CASE("simple int test") {
@@ -80,3 +81,38 @@ TEST_CASE("simple int test") {
 	REQUIRE(it == vec.end());
 }
 
+TEST_CASE("string test") {
+	std::weak_ptr<std::string> tracker;
+	ez::SmallVec<std::shared_ptr<std::string>, 16> vec;
+	{
+		std::shared_ptr<std::string> str = std::make_shared<std::string>("Testing a string");
+		tracker = str;
+		vec.push_back(std::move(str));
+	}
+
+	REQUIRE(vec.size() == 1);
+	REQUIRE(!vec.empty());
+
+	REQUIRE(tracker.use_count() == 1);
+	REQUIRE(!tracker.expired());
+
+	vec.push_back(tracker.lock());
+	REQUIRE(vec.size() == 2);
+	REQUIRE(tracker.use_count() == 2);
+
+	vec.push_back(tracker.lock());
+	REQUIRE(vec.size() == 3);
+	REQUIRE(tracker.use_count() == 3);
+
+	vec.pop_back();
+	REQUIRE(vec.size() == 2);
+	REQUIRE(tracker.use_count() == 2);
+
+	vec.pop_back();
+	REQUIRE(vec.size() == 1);
+	REQUIRE(tracker.use_count() == 1);
+
+	vec.pop_back();
+	REQUIRE(vec.size() == 0);
+	REQUIRE(tracker.expired());
+}

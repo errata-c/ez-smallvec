@@ -44,7 +44,7 @@ namespace ez {
 		SmallVec(SmallVec&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
 			: mcount(other.mcount)
 		{
-			for (size_type i = 0; i < count; ++i) {
+			for (size_type i = 0; i < mcount; ++i) {
 				new (&container[i]) T(std::move(other.container[i]));
 			}
 			other.mcount = 0;

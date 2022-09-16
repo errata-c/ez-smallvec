@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 project(EZ_SMALLVEC
-VERSION 0.1.0
+VERSION 0.2.0
 LANGUAGES C CXX)
 
 set(PACKAGE_NAME ez-smallvec)
@@ -10,7 +10,6 @@ set(TARGET_NAME smallvec)
 include(GNUInstallDirs)
 include(FetchContent)
 
-option(EZ_SMALLVEC_BUILD_TESTS "Build the test executables" ON)
 set(EZ_SMALLVEC_CONFIG_DIR "${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME}" CACHE STRING "The relative directory to install package config files.")
 
 FetchContent_Declare(
@@ -43,13 +42,14 @@ target_compile_features(${TARGET_NAME} INTERFACE cxx_std_17)
 # Just for internal compatibility, so that subprojects can use the namespaced version
 add_library("ez::${TARGET_NAME}" ALIAS "${TARGET_NAME}")
 
-# Build the tests once the option is enabled.
-if(${${PACKAGE_NAME}_BUILD_TESTS})
-	add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/tests")
-endif()
+if(PROJECT_IS_TOP_LEVEL)
+	include(CTest)
 
-ez_is_project_top_level(EZ_SMALLVEC_TOP_LEVEL)
-if(EZ_SMALLVEC_TOP_LEVEL)
+	# Build the tests once the option is enabled.
+	if(BUILD_TESTING)
+		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/tests")
+	endif()
+
 	install(
 		DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 		TYPE INCLUDE
@@ -75,15 +75,7 @@ if(EZ_SMALLVEC_TOP_LEVEL)
 		COMPATIBILITY "SameMajorVersion"
 
 		# Relative install location of the package config files.
-		DESTINATION "${${PACKAGE_NAME}_CONFIG_DIR}"
-
-		# Pre and Post configuration files for the packages. Files are run as scripts when the package is found.
-		# Most dependencies must be found in the preconfig file, except non-target dependencies
-		# Non-target dependencies should probably be found in the post config, and added onto the imported target manually.
-		# Non-target dependencies kinda suck, avoid them if you can.
-
-		#PRECONFIG "cmake/preconfig.cmake"
-		#POSTCONFIG "cmake/postconfig.cmake"
+		DESTINATION "${EZ_SMALLVEC_CONFIG_DIR}"
 
 		# Only add this option if the library is header only, or an interface library.
 		ARCH_INDEPENDENT
