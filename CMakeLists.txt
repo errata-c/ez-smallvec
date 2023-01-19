@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
 
 project(EZ_SMALLVEC
 VERSION 0.2.0
@@ -21,10 +21,7 @@ FetchContent_MakeAvailable(ez-cmake)
 
 
 # Create main target.
-add_library(${TARGET_NAME} INTERFACE
-	# Add source files
-	#"src/IntersectFunctions.cpp"
-)
+add_library(${TARGET_NAME} INTERFACE)
 
 # Add the include directory
 target_include_directories(${TARGET_NAME} INTERFACE 
