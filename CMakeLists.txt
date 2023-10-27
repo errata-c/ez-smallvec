@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(EZ_SMALLVEC
-VERSION 0.2.0
+VERSION 0.2.1
 LANGUAGES C CXX)
 
 set(PACKAGE_NAME ez-smallvec)

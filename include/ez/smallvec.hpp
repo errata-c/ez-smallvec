@@ -8,11 +8,10 @@
 
 namespace ez {
 	template<typename T, size_t N>
-	class SmallVec {
-	public:
-		using self_t = SmallVec<T, N>;
+	class smallvec {
+		using self_t = smallvec<T, N>;
 		using container_t = std::array<T, N>;
-
+	public:
 		using value_type = T;
 		using size_type = size_t;
 		using difference_type = ptrdiff_t;
@@ -27,13 +26,13 @@ namespace ez {
 		using const_reverse_iterator = typename container_t::const_reverse_iterator;
 
 		// Empty constructor, starts at size 0
-		SmallVec()
+		smallvec()
 			: mcount(0)
 		{
 			std::memset(arr, 0, sizeof(arr));
 		}
 		// Deconstruct
-		~SmallVec() {
+		~smallvec() {
 			for (size_type i = 0; i < mcount; ++i) {
 				(&container[i])->~T();
 			}
@@ -41,7 +40,7 @@ namespace ez {
 		}
 
 		// Move construct
-		SmallVec(SmallVec&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
+		smallvec(smallvec&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
 			: mcount(other.mcount)
 		{
 			for (size_type i = 0; i < mcount; ++i) {
@@ -50,26 +49,26 @@ namespace ez {
 			other.mcount = 0;
 		}
 		// Copy construct
-		SmallVec(const SmallVec& other) noexcept(std::is_nothrow_copy_constructible_v<T>)
+		smallvec(const smallvec& other) noexcept(std::is_nothrow_copy_constructible_v<T>)
 			: mcount(other.mcount)
 		{
 			for (size_type i = 0; i < mcount; ++i) {
 				new (&container[i]) T(other.container[i]);
 			}
 		}
-		SmallVec& operator=(const SmallVec& other) noexcept(std::is_nothrow_copy_assignable_v<T>) {
+		smallvec& operator=(const smallvec& other) noexcept(std::is_nothrow_copy_assignable_v<T>) {
 			this->~self_t();
 			new (this) self_t(other);
 
 			return *this;
 		}
-		SmallVec& operator=(SmallVec&& other) noexcept(std::is_nothrow_move_assignable_v<T>) {
+		smallvec& operator=(smallvec&& other) noexcept(std::is_nothrow_move_assignable_v<T>) {
 			this->~self_t();
 			new (this) self_t(std::move(other));
 
 			return *this;
 		}
-		SmallVec(std::initializer_list<T> ilist) noexcept(std::is_nothrow_constructible_v<T>)
+		smallvec(std::initializer_list<T> ilist) noexcept(std::is_nothrow_constructible_v<T>)
 			: mcount(ilist.size())
 		{
 			assert(size() <= max_size());
@@ -77,7 +76,7 @@ namespace ez {
 				push_back(*first);
 			}
 		}
-		SmallVec& operator=(std::initializer_list<T> ilist) noexcept(std::is_nothrow_constructible_v<T>) {
+		smallvec& operator=(std::initializer_list<T> ilist) noexcept(std::is_nothrow_constructible_v<T>) {
 			this->~self_t();
 			new (this) self_t(ilist);
 			return *this;
